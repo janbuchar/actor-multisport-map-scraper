@@ -1,0 +1,94 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "type": "object",
+    "required": ["url", "title", "activities"],
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "URL of the venue's detail page on the MultiSport map."
+      },
+      "id": {
+        "type": ["integer", "null"],
+        "description": "Numeric venue ID from the MultiSport map."
+      },
+      "title": {
+        "type": "string",
+        "description": "Venue name."
+      },
+      "description": {
+        "type": "string",
+        "description": "Short description / list of offered services from the venue card."
+      },
+      "categories": {
+        "type": "array",
+        "description": "Activity categories this venue was listed under on the MultiSport map.",
+        "items": { "type": "string" }
+      },
+      "activities": {
+        "type": "array",
+        "description": "Activities accepted with the MultiSport card.",
+        "items": { "type": "string" }
+      },
+      "street": {
+        "type": ["string", "null"],
+        "description": "Street address."
+      },
+      "city": {
+        "type": ["string", "null"],
+        "description": "City."
+      },
+      "phone": {
+        "type": ["string", "null"],
+        "description": "Contact phone number."
+      },
+      "email": {
+        "type": ["string", "null"],
+        "description": "Contact email address."
+      },
+      "website": {
+        "type": ["string", "null"],
+        "description": "Venue website URL."
+      },
+      "facebook": {
+        "type": ["string", "null"],
+        "description": "Venue Facebook page URL."
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Venues",
+      "description": "MultiSport venues with their activities and contact details.",
+      "transformation": {
+        "fields": [
+          "title",
+          "city",
+          "street",
+          "categories",
+          "activities",
+          "phone",
+          "email",
+          "website",
+          "facebook",
+          "url"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "title": { "label": "Name", "format": "text" },
+          "city": { "label": "City", "format": "text" },
+          "street": { "label": "Street", "format": "text" },
+          "categories": { "label": "Categories", "format": "array" },
+          "activities": { "label": "Activities", "format": "array" },
+          "phone": { "label": "Phone", "format": "text" },
+          "email": { "label": "Email", "format": "text" },
+          "website": { "label": "Website", "format": "link" },
+          "facebook": { "label": "Facebook", "format": "link" },
+          "url": { "label": "Detail URL", "format": "link" }
+        }
+      }
+    }
+  }
+}

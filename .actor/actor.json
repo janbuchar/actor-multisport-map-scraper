@@ -1,0 +1,55 @@
+{
+  "$schema": "https://apify-projects.github.io/actor-json-schemas/actor.json?v=0.7",
+  "actorSpecification": 1,
+  "name": "multisport-map-scraper",
+  "title": "MultiSport Map Scraper",
+  "version": "0.0",
+  "buildTag": "latest",
+  "dockerfile": "../Dockerfile",
+  "readme": "../README.md",
+  "storages": {
+    "dataset": "./dataset_schema.json"
+  },
+  "input": {
+    "title": "MultiSport Map Scraper",
+    "description": "Scrapes the MultiSport map (mapa.multisport.cz) for venues that accept the MultiSport card.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+      "categories": {
+        "title": "Activity categories",
+        "description": "Which activity categories to scrape. Leave empty to scrape every category.",
+        "type": "array",
+        "editor": "select",
+        "default": [],
+        "items": {
+          "type": "string",
+          "enum": [
+            "bazeny-a-vodni-sporty-1",
+            "rodice-s-detmi-2",
+            "joga-a-zdravotni-cviceni-3",
+            "lezecke-steny-4",
+            "posilovny-a-silove-treninky-5",
+            "pro-tehotne-6",
+            "raketove-a-micove-sporty-7",
+            "sezonni-a-ostatni-aktivity-8",
+            "skupinove-a-tanecni-lekce-9",
+            "wellness-a-relax-10"
+          ],
+          "enumTitles": [
+            "Bazény a vodní sporty",
+            "Rodiče s dětmi",
+            "Jóga a zdravotní cvičení",
+            "Lezecké stěny",
+            "Posilovny a silové tréninky",
+            "Pro těhotné",
+            "Raketové a míčové sporty",
+            "Sezónní a ostatní aktivity",
+            "Skupinové a taneční lekce",
+            "Wellness a relax"
+          ]
+        }
+      }
+    }
+  }
+}
