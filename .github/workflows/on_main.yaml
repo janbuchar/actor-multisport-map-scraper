@@ -1,0 +1,53 @@
+name: CI (main)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  code-checks:
+    name: Code checks
+    uses: ./.github/workflows/_check_code.yaml
+
+  changelog:
+    name: Changelog
+    needs: code-checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Release metadata
+        id: metadata
+        uses: apify/actions/git-cliff-release@v1.1.2
+        with:
+          release_type: prerelease
+
+      - name: Update CHANGELOG.md
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: CHANGELOG.md
+          write-mode: overwrite
+          contents: ${{ steps.metadata.outputs.changelog }}
+
+      - name: Run formatter
+        run: |
+          npm ci
+          npm run fmt
+
+      - name: Commit changes
+        uses: apify/actions/signed-commit@v1.0.0
+        with:
+          message: "chore(release): Update changelog [skip ci]"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  push-actor:
+    name: Actor push
+    needs: code-checks
+    uses: ./.github/workflows/manual_push_actor.yaml
+    secrets: inherit

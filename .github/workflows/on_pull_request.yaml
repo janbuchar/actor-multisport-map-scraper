@@ -1,0 +1,9 @@
+name: CI (PR)
+
+on:
+  pull_request:
+
+jobs:
+  code-checks:
+    name: Code checks
+    uses: ./.github/workflows/_check_code.yaml

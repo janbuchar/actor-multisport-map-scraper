@@ -1,0 +1,7 @@
+# The scraped site (mapa.multisport.cz) and its category slugs are in Czech,
+# so some words look like English typos but are intentional.
+[default.extend-words]
+# Czech "aktivity" (activities), part of category slugs and titles.
+aktivity = "aktivity"
+# Deliberate "categor" + "y"/"ies" string split in a log message.
+categor = "categor"
