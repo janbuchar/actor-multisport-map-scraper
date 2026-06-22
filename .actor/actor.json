@@ -22,7 +22,9 @@
         "type": "array",
         "editor": "select",
         "default": [],
-        "prefill": "lezecke-steny-4",
+        "prefill": [
+          "lezecke-steny-4"
+        ],
         "items": {
           "type": "string",
           "enum": [
