@@ -38,39 +38,51 @@ export function createRouter(registry: VenueRegistry) {
 
   // Landing page: collect the activity category links, keeping only the ones
   // the user asked for (or all of them when no filter was given).
-  router.addHandler(Label.Main, async ({ request, addRequests, querySelector, log }) => {
-    const selected = new Set(SelectedCategoriesSchema.parse(request.userData.categories));
+  router.addHandler(
+    Label.Main,
+    async ({ request, addRequests, waitForSelector, parseWithCheerio, log }) => {
+      const selected = new Set(SelectedCategoriesSchema.parse(request.userData.categories));
 
-    let urls = (await querySelector("a[data-search_type=ACTIVITY_CATEGORY][data-url]"))
-      .map((_, el) => el.attribs["data-url"])
-      .toArray()
-      .filter((url): url is string => Boolean(url));
+      const selector = "a[data-search_type=ACTIVITY_CATEGORY][data-url]";
+      await waitForSelector(selector);
+      const $ = await parseWithCheerio();
 
-    if (selected.size > 0) {
-      urls = urls.filter((url) => {
-        const slug = categorySlugFromUrl(url);
-        return slug !== null && selected.has(slug);
-      });
-    }
+      let urls = $(selector)
+        .map((_, el) => $(el).attr("data-url"))
+        .toArray()
+        .filter((url): url is string => Boolean(url));
 
-    log.info(`Enqueuing ${urls.length} categor${urls.length === 1 ? "y" : "ies"}`);
+      if (selected.size > 0) {
+        urls = urls.filter((url) => {
+          const slug = categorySlugFromUrl(url);
+          return slug !== null && selected.has(slug);
+        });
+      }
 
-    await addRequests(
-      urls.flatMap((url) => {
-        const slug = categorySlugFromUrl(url);
-        if (slug === null) return [];
-        return [{ url: `${BASE_URL}${url}`, label: Label.Category, userData: { category: slug } }];
-      }),
-    );
-  });
+      log.info(`Enqueuing ${urls.length} categor${urls.length === 1 ? "y" : "ies"}`);
+
+      await addRequests(
+        urls.flatMap((url) => {
+          const slug = categorySlugFromUrl(url);
+          if (slug === null) return [];
+          return [
+            { url: `${BASE_URL}${url}`, label: Label.Category, userData: { category: slug } },
+          ];
+        }),
+      );
+    },
+  );
 
   // Category page: record which venues belong to this category. Detail
   // requests are NOT enqueued here — see `main.ts` phase two.
-  router.addHandler(Label.Category, async ({ request, querySelector, log }) => {
+  router.addHandler(Label.Category, async ({ request, waitForSelector, parseWithCheerio, log }) => {
     const { category } = CategoryUserDataSchema.parse(request.userData);
 
-    const ids = (await querySelector("a[data-id]"))
-      .map((_, el) => el.attribs["data-id"])
+    await waitForSelector("a[data-id]");
+    const $ = await parseWithCheerio();
+
+    const ids = $("a[data-id]")
+      .map((_, el) => $(el).attr("data-id"))
       .toArray()
       .filter((id): id is string => Boolean(id));
 
@@ -89,14 +101,14 @@ export function createRouter(registry: VenueRegistry) {
   // Detail page: extract a single venue, tagged with its categories.
   router.addHandler(
     Label.Detail,
-    async ({ request, querySelector, parseWithCheerio, pushData, log }) => {
+    async ({ request, waitForSelector, parseWithCheerio, pushData, log }) => {
       const { categories } = DetailUserDataSchema.parse(request.userData);
 
       // Wait only for the always-present title, then parse the rendered DOM once.
-      // Optional fields (website, phone, …) must not be `await querySelector`-ed
+      // Optional fields (website, phone, …) must not be `await waitForSelector`-ed
       // individually, as the adaptive crawler would block waiting for elements
       // that legitimately do not exist on every venue.
-      await querySelector(".detail-item-header h1");
+      await waitForSelector(".detail-item-header h1");
       const $ = await parseWithCheerio();
 
       const sidebar = $("#id_sidebar_container");
