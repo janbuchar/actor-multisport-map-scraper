@@ -47,6 +47,7 @@ await crawler.run(
     label: Label.Detail,
     userData: { categories: [...categories] },
   })),
+  { purgeRequestQueue: false }, // Only new requests will be added, no need to purge the request queue
 );
 
 log.info("Crawl finished.");
